@@ -18,8 +18,6 @@ app.options("/user-info", cors())
 
 // 
 app.post("/register", cors(), async (req, res) => {
-    console.log("Request received register")
-    console.log(req.body)
     let { username, password ,dob, email} = req.body
     const user = new UserDb({
         username: username,
@@ -29,7 +27,6 @@ app.post("/register", cors(), async (req, res) => {
     });
     try {
         let savedUser = await user.save();
-        console.log(savedUser)
         res.status(200).json({ savedUser })
     } catch (error) {
         console.error(error);
@@ -38,13 +35,10 @@ app.post("/register", cors(), async (req, res) => {
 
 //
 app.post("/login", cors(), async (req, res) => {
-    console.log(req.body);
     // request body object destructuring
     let { username, password } = req.body
 
     const dbUser = await UserDb.findOne({ username: username });
-    console.log("ew---",dbUser,password)
-
     if (dbUser.password == password) {
         // res.status(200).json({Status: "Login Successful",data: req.data}) 
         
@@ -54,7 +48,6 @@ app.post("/login", cors(), async (req, res) => {
                 jwtToken: jwtBearerToken,
                 message: "Login Successful!"
             });
-            console.log(jwtBearerToken);
         // sending jwt token using cookie
         
         // res.cookie("SESSIONID",jwtBearerToken,{httpOnly:true,secure:true});
@@ -68,9 +61,9 @@ app.post("/login", cors(), async (req, res) => {
 
 // middleware to verify token
 function verify(req, res, next) {
-    console.log(req.headers);
+    
     const authHeader = req.headers['authorization']
-    console.log(authHeader);
+  
     if (typeof authHeader === 'undefined') {
         res.send({ errorMessage: "Token not received" });
     } else {
